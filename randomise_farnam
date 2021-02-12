@@ -162,8 +162,9 @@ chmod a+x ${LOGDIR}/${BASENAME}.generate
 #GENERATE_ID=`$FSLDIR/bin/fsl_sub -T ${REQUESTED_TIME} -N ${BASENAME}.generate -l ${DIRNAME}/${BASENAME}_logs/ -t ${DIRNAME}/${BASENAME}.generate`
 
 # SimpleQueue submit
-module load SimpleQueue
-sqSlurm.py -q $QUEUE -n $TASKS -w $CORES -m $MEM -w $WALL -N randomise.gen --logdir="${LOGDIR}/sq_generate" ${LOGDIR}/${BASENAME}.generate > $LOGDIR/generate_run.sh
+module load dSQ
+dsq --job-file ${LOGDIR}/${BASENAME}.generate --batch-file $LOGDIR/generate_run.sh -p $QUEUE -c $CORES --mem-per-cpu=$MEM -t $WALL -J randomise.gen -o "${LOGDIR}/dsq_generate/sq_generate-%A_%a-%N.out"
+mkdir -p ${LOGDIR}/dsq_generate
 JID=$(sbatch -o ${LOGDIR}/${BASENAME}.generate.out -e ${LOGDIR}/${BASENAME}.generate.err $LOGDIR/generate_run.sh | awk '{print $NF}')
 
 #stage2:
